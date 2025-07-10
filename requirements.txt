@@ -1,0 +1,12 @@
+tensorflow==2.11.0
+keras-vggface
+keras-applications
+mtcnn
+opencv-python
+scikit-learn
+scipy
+pillow
+pandas
+openpyxl
+numpy==1.23.5
+flask

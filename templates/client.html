@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Điểm danh bằng khuôn mặt</title>
+    <style>
+        video { border: 2px solid #333; border-radius: 8px; }
+        #status { margin-top: 10px; font-size: 18px; color: green; }
+    </style>
+</head>
+<body>
+    <h2>📷 Điểm danh bằng webcam thiết bị</h2>
+    <video id="video" width="640" height="480" autoplay muted></video>
+    <div id="status">🟢 Đang khởi động webcam...</div>
+    <button onclick="saveAttendance()">💾 Lưu điểm danh</button>
+
+    <script>
+        const video = document.getElementById('video');
+        const statusDiv = document.getElementById('status');
+
+        // Truy cập webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                statusDiv.innerText = '🟢 Webcam đang hoạt động...';
+            })
+            .catch(err => {
+                statusDiv.innerText = '🔴 Không thể truy cập webcam!';
+                console.error(err);
+            });
+
+        // Gửi ảnh định kỳ lên server mỗi 2 giây
+        setInterval(() => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            fetch('/api/recognize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.recognized.length > 0) {
+                    statusDiv.innerText = `✅ Nhận diện: ${data.recognized.join(', ')}`;
+                } else {
+                    statusDiv.innerText = '⚠️ Không nhận diện được';
+                }
+            });
+        }, 2000);
+
+        // Gọi API lưu file Excel
+        function saveAttendance() {
+            fetch('/save')
+                .then(res => res.text())
+                .then(msg => {
+                    alert(msg);
+                });
+        }
+    </script>
+</body>
+</html>

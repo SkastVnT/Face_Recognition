@@ -1,0 +1,57 @@
+Sơ lược về cấu trúc các thư mục và file:
+"
+face_recognition_project/
+├── dataset/
+│   └── known_faces/
+│       ├── PersonA/
+│       │   ├── img1.jpg
+│       │   └── img2.jpg
+│       └── PersonB/
+│           ├── img1.jpg
+│           └── img2.jpg
+│
+├── templates/
+│   ├── client.html
+│   └── index.html
+│
+│
+├── encodings/
+│   └── embeddings.pkl        # File embedding khuôn mặt từ dữ liệu huấn luyện
+│
+├── models/
+│   └── classifier.pkl        # File mô hình SVM đã huấn luyện
+│
+├── data_processing.py        # Xử lý chung (phát hiện mặt, embedding)
+├── encode_data.py            # Tạo embeddings.pkl
+├── train_classifier.py       # Huấn luyện và tạo classifier.pkl
+├── recognize_image.py        # Nhận diện từ ảnh tĩnh
+├── recognize_webcam.py       # Nhận diện từ webcam
+├── requirements.txt          # File chứa thư viện cần cài đặt
+└── README                    # File hướng dẫn cần đọc trước khi chạy hệ thống
+"
+
+
+Trước tiên hãy tạo một thư mục chứa các libs để sử dụng dùng lệnh này để tạo môi trường ảo "python -m venv face_env"
+
+Sử dụng:
+Bằng [Powershell]: .\face_env\Scripts\Activate.ps1
+Bằng [CMD]: face_env\Scripts\activate.bat
+
+Hãy cài đặt các thư viện bằng lệnh "pip install -r requirements.txt"
+
+Do có một số không mong muốn nên trước khi sử dụng các lệnh "python encode_data.py", "python train_classifier.py" và "python recognize_webcam.py"
+
+
+Hãy truy cập vào .\face_env\libs\site-packages\keras_vggface\models.py
+Chỉnh sửa ở dòng 20 "from keras.engine.topology import get_source_inputs" thành "from tensorflow.keras.utils import get_source_inputs"
+
+Sau đó chạy lần lượt "python encode_data.py" và "python train_classifier.py"
+
+Sau khi chạy "python encode_data.py" thì sẽ có một file trong /encodings/"embeddings.pkl" được tạo ra với 'File embedding khuôn mặt từ dữ liệu huấn luyện'
+và khi đã có file "embeddings.pkl" thì chúng ta mới có thể chạy "python train_classifier.py" để tạo ra models/'classifier.pkl' để tạo ra classifier.pkl 'File mô hình SVM đã huấn luyện'
+
+Và sử dụng bằng lệnh "python recognize_webcam.py" (BẮT BUỘC PHẢI CÓ WEBCAM)
+Sau khi nhận diện được mặt người có trong dataset thì dữ liệu sẽ lưu tạm thời và tiếp tục điểm danh các người khác có trong dataset, chỉ cần bấm 'ESC' để tắt webcam thì hệ thống sẽ lưu file excel vào thư mục checkin
+
+hoặc có thể sử dụng lệnh "python app.py" để triển khai website Flask
+
